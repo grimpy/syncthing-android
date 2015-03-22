@@ -38,7 +38,7 @@ public class SyncthingRunnable implements Runnable {
 
     @Override
     public void run() {
-        SharedPreferences pm = PreferenceManager.getDefaultSharedPreferences(mContext);
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
         DataOutputStream dos = null;
         int ret = 1;
         Process process = null;
@@ -49,9 +49,11 @@ public class SyncthingRunnable implements Runnable {
                 dos = new DataOutputStream(process.getOutputStream());
                 // Set home directory to data folder for syncthing to use.
                 dos.writeBytes("HOME=" + Environment.getExternalStorageDirectory() + " ");
-                dos.writeBytes("STTRACE=" + pm.getString("sttrace", "") + " ");
+                dos.writeBytes("STTRACE=" + sp.getString("sttrace", "") + " ");
                 dos.writeBytes("STNORESTART=1 ");
                 dos.writeBytes("STNOUPGRADE=1 ");
+                dos.writeBytes("STGUIAUTH='" + sp.getString("gui_user", "") + ":" +
+                                sp.getString("gui_password", "") + "' ");
                 // Call syncthing with -home (as it would otherwise use "~/.config/syncthing/".
                 dos.writeBytes(mCommand + " -home " + mContext.getFilesDir() + "\n");
                 dos.writeBytes("exit\n");
